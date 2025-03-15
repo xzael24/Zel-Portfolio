@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "My Portfolio",
+  title: "Zael Portfolio",
   description: "Welcome to my professional portfolio",
 };
 
@@ -13,9 +13,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/favicon.png" />
+      </head>
       <body className="bg-secondary text-white">
+
         {children}
       </body>
     </html>
   );
-} 
+}
