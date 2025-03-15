@@ -1,59 +1,85 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 const Hero = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.3,
-      },
-    },
-  };
+  const [text, setText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const texts = ["Front-End Developer", "UI/UX Designer"];
+  const period = 2000;
+  const delta = 100;
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
+  useEffect(() => {
+    let ticker;
+    
+    if (isDeleting) {
+      ticker = setTimeout(() => tick(), delta / 2);
+    } else {
+      ticker = setTimeout(() => tick(), delta);
+    }
 
-  const buttonVariants = {
-    hover: {
-      scale: 1.05,
-      transition: {
-        duration: 0.2,
-        type: "tween",
-        ease: "easeInOut",
-      },
-    },
-    tap: {
-      scale: 0.95,
-    },
+    return () => clearTimeout(ticker);
+  }, [text, isDeleting]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: e.clientX,
+        y: e.clientY
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const tick = () => {
+    let i = loopNum % texts.length;
+    let fullText = texts[i];
+    let updatedText = isDeleting 
+      ? fullText.substring(0, text.length - 1)
+      : fullText.substring(0, text.length + 1);
+
+    setText(updatedText);
+
+    if (!isDeleting && updatedText === fullText) {
+      setTimeout(() => setIsDeleting(true), period);
+    } else if (isDeleting && updatedText === '') {
+      setIsDeleting(false);
+      setLoopNum((prevLoop) => (prevLoop + 1) % texts.length);
+    }
   };
 
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center pt-20 px-6">
+    <section id="home" className="min-h-screen flex items-center justify-center pt-20 px-6 relative overflow-hidden">
+      {/* Animated Background Blob */}
       <motion.div
-        className="max-w-4xl mx-auto"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
+        className="fixed w-[500px] h-[500px] rounded-full bg-blue-500/20 blur-[80px] pointer-events-none"
+        animate={{
+          x: mousePosition.x - window.innerWidth / 2,
+          y: mousePosition.y - window.innerHeight / 2,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 50,
+          damping: 30,
+          mass: 0.8,
+        }}
+        style={{
+          left: '50%',
+          top: '50%',
+        }}
+      />
+
+      <motion.div className="max-w-4xl mx-auto relative z-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
         <div className="text-center md:text-left">
-          <motion.h1 
-            className="text-5xl md:text-6xl font-bold mb-6"
-            variants={itemVariants}
-          >
-            Hi, I'm{" "}
+          <motion.h1 className="text-5xl md:text-6xl font-bold mb-6">
+            Hi, I'm{' '}
             <motion.span 
-              className="text-primary inline-block"
+              className="text-blue-500 inline-block"
               animate={{ 
                 scale: [1, 1.1, 1],
                 rotate: [0, -5, 5, 0] 
@@ -67,42 +93,27 @@ const Hero = () => {
               Zael Kluivert
             </motion.span>
           </motion.h1>
-          
-          <motion.h2 
-            className="text-2xl md:text-3xl text-dimWhite font-semibold mb-6"
-            variants={itemVariants}
-          >
-            Full Stack Developer | UI/UX Designer | Tech Enthusiast
+
+          <motion.h2 className="text-2xl md:text-3xl text-gray-400 font-semibold mb-6 h-[40px]">
+            <span>I'm a </span>
+            <span className="inline-block min-w-[80px]">
+              {text}
+              <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 0.5, repeat: Infinity }} className="inline-block ml-1">
+                |
+              </motion.span>
+            </span>
           </motion.h2>
-          
-          <motion.p 
-            className="text-dimWhite text-lg mb-8 max-w-2xl mx-auto md:mx-0"
-            variants={itemVariants}
-          >
+
+          <motion.p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto md:mx-0">
             I create beautiful, functional, and user-friendly digital experiences.
             With expertise in both frontend and backend development, I bring ideas to life.
           </motion.p>
-          
-          <motion.div 
-            className="flex flex-col md:flex-row gap-4 justify-center md:justify-start"
-            variants={itemVariants}
-          >
-            <motion.a 
-              href="#projects" 
-              className="btn btn-primary text-center"
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-            >
+
+          <motion.div className="flex flex-col md:flex-row gap-4 justify-center md:justify-start">
+            <motion.a href="#projects" className="btn btn-primary text-center" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               View My Work
             </motion.a>
-            <motion.a 
-              href="#contact" 
-              className="btn border-2 border-primary text-primary hover:bg-primary hover:text-white text-center"
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-            >
+            <motion.a href="#contact" className="btn border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white text-center" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               Contact Me
             </motion.a>
           </motion.div>
@@ -112,4 +123,4 @@ const Hero = () => {
   );
 };
 
-export default Hero; 
+export default Hero;
