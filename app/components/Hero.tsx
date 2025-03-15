@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const Hero = () => {
   const [text, setText] = useState('');
@@ -11,6 +12,7 @@ const Hero = () => {
   const period = 2000;
   const delta = 100;
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     let ticker;
@@ -25,6 +27,12 @@ const Hero = () => {
   }, [text, isDeleting]);
 
   useEffect(() => {
+    // Set window size on mount
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({
         x: e.clientX,
@@ -32,8 +40,20 @@ const Hero = () => {
       });
     };
 
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const tick = () => {
@@ -59,8 +79,8 @@ const Hero = () => {
       <motion.div
         className="fixed w-[500px] h-[500px] rounded-full bg-blue-500/20 blur-[80px] pointer-events-none"
         animate={{
-          x: mousePosition.x - window.innerWidth / 2,
-          y: mousePosition.y - window.innerHeight / 2,
+          x: mousePosition.x - (windowSize.width / 2),
+          y: mousePosition.y - (windowSize.height / 2),
         }}
         transition={{
           type: "spring",

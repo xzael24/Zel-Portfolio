@@ -1,13 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
-const poppins = Poppins({ 
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-  variable: '--font-poppins',
-});
 
 export const metadata: Metadata = {
   title: "My Portfolio",
@@ -20,11 +12,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${poppins.variable}`}>
-      <body className={`${inter.className} bg-secondary text-white`}>
-        <main className="min-h-screen">
-          {children}
-        </main>
+    <html lang="en">
+      <body className="bg-secondary text-white">
+        {children}
       </body>
     </html>
   );
