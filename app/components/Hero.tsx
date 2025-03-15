@@ -101,7 +101,7 @@ const Hero = () => {
             <motion.span 
               className="text-blue-500 inline-block"
               animate={{ 
-                scale: [1, 1.1, 1],
+                scale: [1, 1.05, 1],
                 rotate: [0, -5, 5, 0] 
               }}
               transition={{ 
@@ -110,7 +110,7 @@ const Hero = () => {
                 repeatDelay: 3
               }}
             >
-              Zael Kluivert
+              Muhammad Zaim El Yafi
             </motion.span>
           </motion.h1>
 
